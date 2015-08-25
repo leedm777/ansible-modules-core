@@ -166,6 +166,12 @@ options:
     required: false
     default: null
     version_added: "2.0"
+  group_add:
+    description:
+      - Add additional groups to join
+    require: false
+    default: null
+    version_added: "2.0"
   username:
     description:
       - Remote API username.
@@ -1424,6 +1430,9 @@ class DockerManager(object):
         if self.ensure_capability('host_config', fail=False):
             params['host_config'] = self.get_host_config()
 
+        if self.module.params.get('group_add'):
+            params['group-add'] = self.module.params.get('group_add'),
+
         #For v1.19 API and above use HostConfig, otherwise use Config
         if api_version < 1.19:
             params['mem_limit'] = mem_limit
@@ -1637,6 +1646,7 @@ def main():
             tls_hostname    = dict(required=False, type='str', default=None),
             docker_api_version = dict(required=False, default=DEFAULT_DOCKER_API_VERSION, type='str'),
             docker_user     = dict(default=None),
+            group_add       = dict(default=None, type='list'),
             username        = dict(default=None),
             password        = dict(),
             email           = dict(),
